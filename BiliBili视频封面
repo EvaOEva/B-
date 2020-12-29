@@ -1,0 +1,29 @@
+import requests
+import os
+
+class BiliBili_impages:
+    url = 'https://api.bilibili.com/x/space/arc/search?mid=107150367&pn=1&ps=25&index=1&jsonp=jsonp'
+    headers = {
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+    }
+    file_path = './'
+    def get_urls(self):
+        res = requests.get(url = self.url,headers = self.headers)
+        pic_urls = []
+        for url in res.json()['data']['list']['vlist']:
+            pic = url['pic']
+            pic_urls.append(pic)
+        return pic_urls
+
+    def download_pic(self):
+        pic_urls = self.get_urls()
+        if not os.path.exists(self.file_path):
+            os.mkdir(self.file_path)
+        for i in range(0,len(pic_urls)):
+            print(f'正在下载第{i}张图片')
+            open(f'{self.file_path}{i}.jpg','wb').write(requests.get(pic_urls[i]).content)
+
+
+if __name__ == '__main__':
+    bilibili = BiliBili_impages()
+    bilibili.download_pic()
